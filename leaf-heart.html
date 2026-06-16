@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>물드는 심장 — 잎을 건네면</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap');
+
+  :root {
+    --night: #15100c;
+    --night-2: #271a10;
+    --gold: #ffc93c;
+    --gold-soft: #ffe08a;
+    --ember: #f5a623;
+    --dried: #8a7c6a;
+    --cream: #f3e9d6;
+    --muted: #b3a48a;
+    --rose: #c06a4a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; user-select: none; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #0c0805; touch-action: none; }
+
+  #stage {
+    position: relative;
+    width: 100%;
+    max-width: 560px;
+    height: 100dvh;
+    max-height: 920px;
+    margin: 0 auto;
+    overflow: hidden;
+    background:
+      radial-gradient(140% 90% at 50% 28%, #2b1c10 0%, #1a1109 46%, #0d0805 100%);
+  }
+  canvas { display: block; width: 100%; height: 100%; }
+
+  .top-line {
+    position: absolute;
+    top: max(16px, env(safe-area-inset-top, 0px));
+    left: 0; right: 0;
+    text-align: center;
+    z-index: 12;
+    pointer-events: none;
+    font-family: 'Nanum Myeongjo', serif;
+    color: var(--muted);
+    font-size: 12px;
+    letter-spacing: 3px;
+    opacity: 0.78;
+  }
+
+  .hint {
+    position: absolute;
+    left: 50%;
+    bottom: max(40px, env(safe-area-inset-bottom, 0px));
+    transform: translateX(-50%);
+    z-index: 12;
+    pointer-events: none;
+    font-family: 'Nanum Myeongjo', serif;
+    color: var(--cream);
+    font-size: 13px;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 14px rgba(0,0,0,0.7);
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    white-space: nowrap;
+  }
+
+  .veil {
+    position: absolute;
+    inset: 0;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 26px;
+    background:
+      radial-gradient(120% 80% at 50% 38%, rgba(40,26,14,0.62) 0%, rgba(10,7,4,0.9) 100%);
+    backdrop-filter: blur(3px);
+    transition: opacity 0.5s ease;
+  }
+  .veil.hidden { opacity: 0; pointer-events: none; }
+
+  .card {
+    width: min(94%, 430px);
+    text-align: center;
+    font-family: 'Nanum Myeongjo', serif;
+    color: var(--cream);
+  }
+  .eyebrow {
+    font-size: 12px;
+    letter-spacing: 5px;
+    color: var(--gold);
+    opacity: 0.85;
+    margin-bottom: 18px;
+  }
+  .title {
+    font-size: clamp(34px, 11vw, 50px);
+    font-weight: 800;
+    line-height: 1.18;
+    letter-spacing: 1px;
+    margin-bottom: 18px;
+    text-shadow: 0 0 36px rgba(255,201,60,0.22);
+  }
+  .title .small { display: block; font-size: 0.46em; font-weight: 400; color: var(--muted); letter-spacing: 4px; margin-bottom: 10px; }
+  .verse {
+    font-size: 15px;
+    line-height: 2.05;
+    color: #ddcfb4;
+    margin: 0 auto 26px;
+    max-width: 320px;
+    font-weight: 400;
+  }
+  .verse em { color: var(--gold); font-style: normal; }
+  .leaf-rule {
+    font-size: 13px;
+    line-height: 1.95;
+    color: var(--muted);
+    border-top: 1px solid rgba(255,201,60,0.18);
+    border-bottom: 1px solid rgba(255,201,60,0.18);
+    padding: 16px 8px;
+    margin: 0 auto 28px;
+    max-width: 340px;
+  }
+  .leaf-rule b { color: var(--gold-soft); font-weight: 700; }
+
+  .btn {
+    font-family: 'Nanum Myeongjo', serif;
+    border: 1px solid rgba(255,201,60,0.55);
+    color: #1a1109;
+    background: linear-gradient(180deg, #ffd45e, #f0a93a);
+    border-radius: 999px;
+    padding: 14px 40px;
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    cursor: pointer;
+    box-shadow: 0 10px 34px rgba(245,166,35,0.28), inset 0 1px 0 rgba(255,255,255,0.4);
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+  }
+  .btn:hover { transform: translateY(-1px); box-shadow: 0 14px 40px rgba(245,166,35,0.36); }
+  .btn:active { transform: translateY(1px); }
+  .btn:focus-visible { outline: 2px solid var(--gold-soft); outline-offset: 3px; }
+
+  .sign { margin-top: 22px; font-size: 11px; letter-spacing: 2px; color: rgba(179,164,138,0.55); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .veil, .btn, .hint { transition: none; }
+  }
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="game"></canvas>
+
+  <div class="top-line">칠곡 · 천년 은행나무 · 보름밤</div>
+  <div class="hint" id="hint">메마른 잎을 눌러, 황금빛으로 물들이세요</div>
+
+  <div class="veil" id="veil">
+    <div class="card" id="card">
+      <div class="eyebrow">잎을 건네면</div>
+      <h1 class="title"><span class="small">미니게임</span>물드는 심장</h1>
+      <p class="verse">끝없이 몰아치는 잎 속에서,<br />심장이 <em>물들기를 멈추지 않게.</em></p>
+      <div class="leaf-rule">
+        사방에서 노란 은행잎이 심장으로 날아옵니다.<br />
+        닿기 전에 <b>정확히 눌러</b> 황금빛으로 물들이세요.<br />
+        놓친 잎은 <b>붉게 시들어</b> 심장을 깎습니다 — 버틸 수 있을 때까지.
+      </div>
+      <button class="btn" id="start-btn">잎을 잡는다</button>
+      <div class="sign">✦ 막 두드리면 콤보가 끊깁니다 · 정확히</div>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  'use strict';
+
+  const canvas = document.getElementById('game');
+  const ctx = canvas.getContext('2d');
+  const stage = document.getElementById('stage');
+  const veil = document.getElementById('veil');
+  const card = document.getElementById('card');
+  const startBtn = document.getElementById('start-btn');
+  const hintEl = document.getElementById('hint');
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let width = 0, height = 0, dpr = 1;
+  let lastTime = performance.now();
+
+  // ---- 밸런스 (조절 가능) — 무한 생존 모드 ----
+  const START_HP = 100;     // 심장 시작 체력
+  const TINT_HEAL = 2.0;    // 물든 잎이 채우는 양 (소량 회복)
+  const MISS_DMG = 5.0;     // 놓친 잎이 깎는 양
+  const HIT_PAD = 12;       // 탭 인식 여유 (작을수록 정밀 조준 필요)
+  const TAP_COOLDOWN = 6;   // 물들인 직후 재입력 쿨다운(프레임). 막 두드리기 방지 — 초당 처리 수 상한
+
+  const state = {
+    mode: 'menu',
+    gauge: START_HP,
+    leaves: [],
+    motes: [],
+    particles: [],
+    flashes: [],
+    ambient: [],
+    rings: [],
+    elapsed: 0,
+    spawnTimer: 0,
+    heartGlow: 0,
+    heartShake: 0,
+    heartDim: 0,
+    beat: 0,
+    pointer: { x: 0, y: 0, inside: false },
+    hintUntil: 0,
+    tinted: 0,
+    missed: 0,
+    combo: 0,
+    maxCombo: 0,
+    comboFlash: 0,
+    tapCooldown: 0,
+    nextTimeBloom: 60,
+    bloomLife: 0,
+    best: { score: 0, combo: 0 }
+  };
+
+  function heartCenter() {
+    return { x: width / 2, y: height * 0.46 };
+  }
+  function heartSize() {
+    return Math.max(46, Math.min(74, Math.min(width, height) * 0.092));
+  }
+
+  // 기록 저장 (호스팅 시 유지, 샌드박스에서 막히면 세션 기억으로 폴백)
+  function loadBest() {
+    try {
+      const raw = localStorage.getItem('leaf-heart-best');
+      if (raw) {
+        const b = JSON.parse(raw);
+        return { score: b.score || 0, combo: b.combo || 0 };
+      }
+    } catch (e) {}
+    return { score: 0, combo: 0 };
+  }
+  function saveBest(b) {
+    try { localStorage.setItem('leaf-heart-best', JSON.stringify(b)); } catch (e) {}
+  }
+
+  // ---------------- 은행잎 ----------------
+  // 부채꼴 + 가운데 갈라짐(노치) = 은행잎 실루엣
+  function leafPath(r) {
+    const half = 0.98;
+    const steps = 18;
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    for (let i = 0; i <= steps; i++) {
+      const t = i / steps;
+      const ang = -Math.PI / 2 - half + 2 * half * t;
+      const notch = 1 - 0.24 * Math.exp(-Math.pow((t - 0.5) / 0.12, 2));
+      const rr = r * notch;
+      ctx.lineTo(Math.cos(ang) * rr, Math.sin(ang) * rr);
+    }
+    ctx.closePath();
+  }
+
+  function drawLeaf(x, y, rot, r, topColor, baseColor, glow) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(rot);
+    if (glow) { ctx.shadowColor = topColor; ctx.shadowBlur = glow; }
+
+    leafPath(r);
+    const grad = ctx.createLinearGradient(0, -r, 0, r * 0.2);
+    grad.addColorStop(0, topColor);
+    grad.addColorStop(1, baseColor);
+    ctx.fillStyle = grad;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // 잎맥 (부채살)
+    ctx.strokeStyle = 'rgba(0,0,0,0.10)';
+    ctx.lineWidth = 0.8;
+    for (let k = -2; k <= 2; k++) {
+      const a = -Math.PI / 2 + k * 0.32;
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(Math.cos(a) * r * 0.86, Math.sin(a) * r * 0.86);
+      ctx.stroke();
+    }
+    // 잎자루
+    ctx.strokeStyle = baseColor;
+    ctx.lineWidth = Math.max(1.2, r * 0.06);
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(0, r * 0.46);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  // ---------------- 클래스 ----------------
+  class Leaf {
+    constructor() {
+      const h = heartCenter();
+      const edge = Math.floor(Math.random() * 4);
+      const m = 40;
+      if (edge === 0) { this.x = Math.random() * width; this.y = -m; }
+      if (edge === 1) { this.x = width + m; this.y = Math.random() * height; }
+      if (edge === 2) { this.x = Math.random() * width; this.y = height + m; }
+      if (edge === 3) { this.x = -m; this.y = Math.random() * height; }
+      const dx = h.x - this.x, dy = h.y - this.y;
+      const d = Math.hypot(dx, dy) || 1;
+      const prog = state.gauge / 100;
+      // 시간이 흐를수록 계속 빨라진다 — 상한 없음
+      const speed = 0.66 + state.elapsed * 0.011 + prog * 0.4 + Math.random() * 0.22;
+      this.dirx = dx / d; this.diry = dy / d;
+      this.speed = speed;
+      this.r = 13 + Math.random() * 6;
+      this.rot = Math.random() * Math.PI * 2;
+      this.spin = (Math.random() - 0.5) * 0.05;
+      this.sway = Math.random() * Math.PI * 2;
+      this.alive = true;
+    }
+    update(dt) {
+      this.sway += 0.04 * dt;
+      const perpx = -this.diry, perpy = this.dirx;
+      const swayAmt = Math.sin(this.sway) * 0.5;
+      this.x += (this.dirx * this.speed + perpx * swayAmt) * dt;
+      this.y += (this.diry * this.speed + perpy * swayAmt) * dt;
+      this.rot += this.spin * dt;
+
+      const h = heartCenter();
+      const core = heartSize() * 0.62;
+      if (Math.hypot(h.x - this.x, h.y - this.y) < core) {
+        this.alive = false;
+        missHeart(this.x, this.y, this.rot, this.r);
+      }
+    }
+    draw() {
+      drawLeaf(this.x, this.y, this.rot, this.r, '#e3b341', '#956616', 0);
+    }
+  }
+
+  class Mote {
+    constructor(x, y) {
+      this.x = x; this.y = y;
+      this.trail = [];
+      this.alive = true;
+      this.speed = 4.4;
+    }
+    update(dt) {
+      const h = heartCenter();
+      const dx = h.x - this.x, dy = h.y - this.y;
+      const d = Math.hypot(dx, dy) || 1;
+      this.trail.push({ x: this.x, y: this.y });
+      if (this.trail.length > 7) this.trail.shift();
+      this.x += (dx / d) * this.speed * dt;
+      this.y += (dy / d) * this.speed * dt;
+      this.speed += 0.12 * dt;
+      if (d < 22) {
+        this.alive = false;
+        absorbHeart();
+      }
+    }
+    draw() {
+      ctx.save();
+      for (let i = 0; i < this.trail.length; i++) {
+        const t = i / this.trail.length;
+        ctx.globalAlpha = t * 0.5;
+        ctx.beginPath();
+        ctx.arc(this.trail[i].x, this.trail[i].y, 2 + t * 2, 0, Math.PI * 2);
+        ctx.fillStyle = '#ffd45e';
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+      ctx.shadowColor = '#ffe08a';
+      ctx.shadowBlur = 16;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, 4.5, 0, Math.PI * 2);
+      ctx.fillStyle = '#fff4d4';
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  class Particle {
+    constructor(x, y, color, speed, gravity) {
+      const a = Math.random() * Math.PI * 2;
+      const p = (0.3 + Math.random()) * speed;
+      this.x = x; this.y = y;
+      this.vx = Math.cos(a) * p;
+      this.vy = Math.sin(a) * p - (gravity ? 1 : 0);
+      this.g = gravity ? 0.06 : -0.01;
+      this.size = 1.6 + Math.random() * 2.4;
+      this.life = 1;
+      this.color = color;
+    }
+    update(dt) {
+      this.vy += this.g * dt;
+      this.x += this.vx * dt;
+      this.y += this.vy * dt;
+      this.vx *= Math.pow(0.94, dt);
+      this.life -= 0.035 * dt;
+    }
+    draw() {
+      if (this.life <= 0) return;
+      ctx.globalAlpha = Math.max(0, this.life);
+      ctx.fillStyle = this.color;
+      ctx.fillRect(this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  class Flash { // 점화: 잎이 확 물드는 순간 (기본 금색, 색 지정 가능)
+    constructor(x, y, rot, r, top, base) {
+      this.x = x; this.y = y; this.rot = rot; this.r = r; this.life = 1;
+      this.top = top || '#fff2cf';
+      this.base = base || '#f3b13e';
+    }
+    update(dt) { this.life -= 0.06 * dt; this.r += 0.4 * dt; }
+    draw() {
+      if (this.life <= 0) return;
+      ctx.globalAlpha = Math.max(0, this.life);
+      drawLeaf(this.x, this.y, this.rot, this.r, this.top, this.base, 18);
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  class Ring { // 심장에 스밀 때 번지는 빛
+    constructor(x, y, color, maxR) { this.x = x; this.y = y; this.r = heartSize() * 0.6; this.max = maxR || heartSize() * 1.9; this.color = color; this.life = 1; }
+    update(dt) { this.r += 2.6 * dt; this.life = Math.max(0, 1 - this.r / this.max); }
+    draw() {
+      if (this.life <= 0) return;
+      ctx.save();
+      ctx.globalAlpha = this.life * 0.6;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+      ctx.strokeStyle = this.color;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.restore();
+    }
+  }
+
+  class Ambient { // 배경에 천천히 지는 잎
+    constructor(initial) {
+      this.x = Math.random() * width;
+      this.y = initial ? Math.random() * height : -20;
+      this.r = 7 + Math.random() * 7;
+      this.vy = 0.18 + Math.random() * 0.32;
+      this.vx = (Math.random() - 0.5) * 0.2;
+      this.rot = Math.random() * Math.PI * 2;
+      this.spin = (Math.random() - 0.5) * 0.02;
+      this.gold = Math.random() < 0.5;
+    }
+    update(dt) {
+      this.y += this.vy * dt;
+      this.x += this.vx * dt;
+      this.rot += this.spin * dt;
+      if (this.y > height + 24) { this.y = -20; this.x = Math.random() * width; }
+    }
+    draw() {
+      ctx.globalAlpha = 0.16;
+      if (this.gold) drawLeaf(this.x, this.y, this.rot, this.r, '#caa24f', '#8a6a2a', 0);
+      else drawLeaf(this.x, this.y, this.rot, this.r, '#6f6353', '#4a4032', 0);
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  // ---------------- 메커니즘 ----------------
+  function spark(x, y, color, count, speed, gravity) {
+    if (state.particles.length > 280) return;
+    for (let i = 0; i < count; i++) state.particles.push(new Particle(x, y, color, speed, gravity));
+  }
+
+  function tintLeaf(leaf) {
+    leaf.alive = false;
+    state.tinted++;
+    state.combo++;
+    if (state.combo > state.maxCombo) state.maxCombo = state.combo;
+    state.comboFlash = 1;
+    if (state.combo > 0 && state.combo % 25 === 0) bloom();
+    state.flashes.push(new Flash(leaf.x, leaf.y, leaf.rot, leaf.r));
+    state.motes.push(new Mote(leaf.x, leaf.y));
+    spark(leaf.x, leaf.y, '#ffe08a', 12, 2.6, false);
+  }
+
+  function absorbHeart() {
+    state.gauge = Math.min(100, state.gauge + TINT_HEAL);
+    state.heartGlow = Math.min(1.4, state.heartGlow + 0.5);
+    const h = heartCenter();
+    state.rings.push(new Ring(h.x, h.y, '#ffd45e'));
+    spark(h.x, h.y, '#ffd45e', 6, 1.6, false);
+  }
+
+  function missHeart(x, y, rot, r) {
+    state.missed++;
+    state.combo = 0;
+    state.gauge = Math.max(0, state.gauge - MISS_DMG);
+    state.heartShake = reduceMotion ? 3 : 7;
+    state.heartDim = 1;
+    // 닿은 잎은 빨갛게 물들며 부서진다
+    state.flashes.push(new Flash(x, y, rot || 0, r || 14, '#ff7a64', '#c0271d'));
+    spark(x, y, '#e0392f', 13, 2.4, true);
+    if (state.gauge <= 0) gameOver();
+  }
+
+  // 심장 만개 — 콤보 25마다 + 60초마다. 성취 연출 + 보너스 회복.
+  function bloom() {
+    const h = heartCenter();
+    state.gauge = Math.min(100, state.gauge + 12);
+    state.heartGlow = 1.4;
+    state.slow = Math.max(state.slow, reduceMotion ? 4 : 9);
+    state.bloomLife = 1;
+    state.rings.push(new Ring(h.x, h.y, '#ffe08a', heartSize() * 3.4));
+    state.rings.push(new Ring(h.x, h.y, '#fff2cf', heartSize() * 2.2));
+    const n = reduceMotion ? 8 : 18;
+    for (let i = 0; i < n; i++) {
+      const ang = (i / n) * Math.PI * 2;
+      const dist = 24 + Math.random() * 22;
+      state.flashes.push(new Flash(h.x + Math.cos(ang) * dist, h.y + Math.sin(ang) * dist, ang + Math.PI / 2, 12 + Math.random() * 7));
+    }
+    spark(h.x, h.y, '#ffe08a', 44, 4.4, false);
+  }
+
+  function showHint(text) {
+    hintEl.textContent = text;
+    hintEl.style.opacity = '1';
+    state.hintUntil = performance.now() + 3600;
+  }
+
+  function startGame() {
+    Object.assign(state, {
+      mode: 'playing', gauge: START_HP,
+      leaves: [], motes: [], particles: [], flashes: [], rings: [],
+      elapsed: 0, spawnTimer: 18, heartGlow: 0, heartShake: 0, heartDim: 0,
+      tinted: 0, missed: 0, combo: 0, maxCombo: 0, comboFlash: 0, tapCooldown: 0, nextTimeBloom: 60, bloomLife: 0
+    });
+    if (state.ambient.length === 0) {
+      const n = reduceMotion ? 5 : 11;
+      for (let i = 0; i < n; i++) state.ambient.push(new Ambient(true));
+    }
+    veil.classList.add('hidden');
+    showHint('정확히 눌러 물들이세요 · 막 두드리면 손해');
+  }
+
+  function gameOver() {
+    if (state.mode !== 'playing') return;
+    state.mode = 'over';
+    state.leaves = [];
+
+    const score = state.tinted;
+    const newScore = score > state.best.score;
+    const newCombo = state.maxCombo > state.best.combo;
+    if (newScore) state.best.score = score;
+    if (newCombo) state.best.combo = state.maxCombo;
+    saveBest(state.best);
+
+    const badge = (newScore || newCombo) ? '<div style="color:var(--gold);letter-spacing:3px;font-size:12px;margin-bottom:11px;">✦ 새 기록 ✦</div>' : '';
+    const lines =
+      `${badge}물든 잎 <b>${score}장</b> · ${state.elapsed.toFixed(0)}초 버팀<br>` +
+      `최고 <b>${state.best.score}장</b> · 최고 연속 ${state.maxCombo}장 (기록 ${state.best.combo})`;
+    showEnd(
+      '심장이 멎었다',
+      '끝없이 몰아치는 잎 속에서,<br />심장은 마지막까지 물들기를 멈추지 않았다.',
+      lines,
+      '다시, 건넨다'
+    );
+  }
+
+  function showEnd(title, verse, tally, btnText) {
+    card.innerHTML = `
+      <div class="eyebrow">${title === '되살아났다' ? '다섯 장째' : '그 밤'}</div>
+      <h1 class="title">${title}</h1>
+      <p class="verse">${verse}</p>
+      <div class="leaf-rule">${tally}</div>
+      <button class="btn" id="again-btn">${btnText}</button>
+      <div class="sign">© 모든 잎은, 나무에게 돌아갑니다</div>
+    `;
+    veil.classList.remove('hidden');
+    document.getElementById('again-btn').addEventListener('click', startGame);
+  }
+
+  // ---------------- 루프 ----------------
+  function update(dt) {
+    state.beat += (0.7 + state.gauge * 0.011) * dt / 60;
+    if (state.heartGlow > 0) state.heartGlow = Math.max(0, state.heartGlow - dt * 0.03);
+    if (state.heartShake > 0) state.heartShake = Math.max(0, state.heartShake - dt * 0.5);
+    if (state.heartDim > 0) state.heartDim = Math.max(0, state.heartDim - dt * 0.04);
+    if (state.comboFlash > 0) state.comboFlash = Math.max(0, state.comboFlash - dt * 0.07);
+    if (state.tapCooldown > 0) state.tapCooldown = Math.max(0, state.tapCooldown - dt);
+    if (state.bloomLife > 0) state.bloomLife = Math.max(0, state.bloomLife - dt * 0.011);
+
+    for (const a of state.ambient) a.update(dt);
+
+    if (state.mode === 'playing') {
+      state.elapsed += dt / 60;
+      if (state.elapsed >= state.nextTimeBloom) { bloom(); state.nextTimeBloom += 60; }
+      state.spawnTimer -= dt;
+      if (state.spawnTimer <= 0) {
+        const prog = state.gauge / 100;
+        // 난이도 = 흐른 시간(주) + 진행도(부). 끝없이 상승, 평탄화 없음.
+        const diff = state.elapsed + prog * 16;
+        let burst = 1;
+        const doubleChance = Math.min(0.65, 0.08 + diff * 0.011);
+        const tripleChance = Math.max(0, (diff - 30) * 0.013);
+        if (Math.random() < doubleChance) burst = 2;
+        if (Math.random() < tripleChance) burst = 3;
+        for (let i = 0; i < burst; i++) state.leaves.push(new Leaf());
+        const interval = Math.max(13, 56 - diff * 1.05);
+        state.spawnTimer = interval * (0.72 + Math.random() * 0.45);
+      }
+      for (const l of state.leaves) l.update(dt);
+      for (const m of state.motes) m.update(dt);
+      state.leaves = state.leaves.filter(l => l.alive);
+      state.motes = state.motes.filter(m => m.alive);
+    }
+
+    for (const p of state.particles) p.update(dt);
+    for (const f of state.flashes) f.update(dt);
+    for (const r of state.rings) r.update(dt);
+    state.particles = state.particles.filter(p => p.life > 0);
+    state.flashes = state.flashes.filter(f => f.life > 0);
+    state.rings = state.rings.filter(r => r.life > 0);
+
+    if (state.hintUntil && performance.now() > state.hintUntil) {
+      hintEl.style.opacity = '0';
+      state.hintUntil = 0;
+    }
+  }
+
+  function heartbeat(t) {
+    const x = t - Math.floor(t);
+    const lub = Math.exp(-Math.pow((x - 0.12) / 0.05, 2));
+    const dub = Math.exp(-Math.pow((x - 0.30) / 0.06, 2)) * 0.7;
+    return lub + dub;
+  }
+
+  function drawHeartPath(cx, cy, s) {
+    ctx.beginPath();
+    ctx.moveTo(cx, cy + s * 0.72);
+    ctx.bezierCurveTo(cx - s * 1.02, cy - s * 0.08, cx - s * 0.56, cy - s * 0.96, cx, cy - s * 0.34);
+    ctx.bezierCurveTo(cx + s * 0.56, cy - s * 0.96, cx + s * 1.02, cy - s * 0.08, cx, cy + s * 0.72);
+    ctx.closePath();
+  }
+
+  function drawHeart() {
+    const h = heartCenter();
+    const ratio = state.gauge / 100;
+    const amp = (reduceMotion ? 0.03 : 0.05) + ratio * 0.05;
+    const beat = heartbeat(state.beat) * amp;
+    const s = heartSize() * (1 + beat);
+
+    const sx = state.heartShake > 0 ? (Math.random() - 0.5) * state.heartShake : 0;
+    const sy = state.heartShake > 0 ? (Math.random() - 0.5) * state.heartShake : 0;
+    const cx = h.x + sx, cy = h.y + sy;
+
+    const top = cy - s * 0.92, bottom = cy + s * 0.74;
+    const left = cx - s * 1.1, right = cx + s * 1.1;
+    const fillY = bottom - (bottom - top) * ratio;
+
+    // 외곽 빛무리
+    ctx.save();
+    const glowR = s * (1.7 + state.heartGlow * 0.5);
+    const halo = ctx.createRadialGradient(cx, cy, s * 0.4, cx, cy, glowR);
+    halo.addColorStop(0, `rgba(255,201,60,${0.10 + ratio * 0.22 + state.heartGlow * 0.18})`);
+    halo.addColorStop(1, 'rgba(255,201,60,0)');
+    ctx.fillStyle = halo;
+    ctx.beginPath();
+    ctx.arc(cx, cy, glowR, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+
+    // 심장 내부: 회색 위로 황금이 차오름
+    ctx.save();
+    drawHeartPath(cx, cy, s);
+    ctx.clip();
+
+    const grayG = ctx.createLinearGradient(0, top, 0, bottom);
+    grayG.addColorStop(0, '#5b544c');
+    grayG.addColorStop(1, '#3a342d');
+    ctx.fillStyle = grayG;
+    ctx.fillRect(left, top, right - left, bottom - top);
+
+    const goldG = ctx.createLinearGradient(0, fillY, 0, bottom);
+    goldG.addColorStop(0, '#ffe08a');
+    goldG.addColorStop(1, '#e8962a');
+    ctx.fillStyle = goldG;
+    ctx.fillRect(left, fillY, right - left, bottom - fillY);
+
+    // 물결선
+    if (ratio > 0.01 && ratio < 0.99) {
+      ctx.strokeStyle = 'rgba(255,244,212,0.7)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(left, fillY);
+      ctx.lineTo(right, fillY);
+      ctx.stroke();
+    }
+
+    // 데미지 시 탁해짐
+    if (state.heartDim > 0) {
+      ctx.fillStyle = `rgba(40,28,18,${state.heartDim * 0.4})`;
+      ctx.fillRect(left, top, right - left, bottom - top);
+    }
+    ctx.restore();
+
+    // 외곽선
+    ctx.save();
+    drawHeartPath(cx, cy, s);
+    ctx.strokeStyle = `rgba(255,201,60,${0.35 + ratio * 0.5})`;
+    ctx.lineWidth = 2;
+    ctx.shadowColor = '#ffc93c';
+    ctx.shadowBlur = 8 + ratio * 16;
+    ctx.stroke();
+    ctx.restore();
+
+    // 게이지 숫자
+    ctx.save();
+    ctx.font = '700 13px "Nanum Myeongjo", serif';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = `rgba(243,233,214,${0.5 + ratio * 0.4})`;
+    ctx.fillText(`${Math.round(state.gauge)}%`, cx, bottom + 26);
+    ctx.restore();
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, width, height);
+
+    // 달빛
+    ctx.save();
+    const moon = ctx.createRadialGradient(width * 0.5, height * 0.22, 0, width * 0.5, height * 0.22, height * 0.5);
+    moon.addColorStop(0, 'rgba(255,236,196,0.05)');
+    moon.addColorStop(1, 'rgba(255,236,196,0)');
+    ctx.fillStyle = moon;
+    ctx.fillRect(0, 0, width, height);
+    ctx.restore();
+
+    for (const a of state.ambient) a.draw();
+    for (const r of state.rings) r.draw();
+    drawHeart();
+    for (const f of state.flashes) f.draw();
+    for (const l of state.leaves) l.draw();
+    for (const m of state.motes) m.draw();
+    for (const p of state.particles) p.draw();
+
+    // 설치 미리보기 점 (어디를 누르는지 살짝)
+    if (state.mode === 'playing' && state.pointer.inside) {
+      ctx.save();
+      ctx.globalAlpha = 0.25;
+      ctx.beginPath();
+      ctx.arc(state.pointer.x, state.pointer.y, 16, 0, Math.PI * 2);
+      ctx.strokeStyle = '#ffd45e';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // 점수 + 타이머 + 콤보 (조용히)
+    if (state.mode === 'playing') {
+      ctx.save();
+      ctx.font = '700 13px "Nanum Myeongjo", serif';
+      ctx.textAlign = 'left';
+      ctx.fillStyle = 'rgba(255,216,94,0.6)';
+      ctx.fillText(`잎 ${state.tinted}`, 18, 32);
+      ctx.textAlign = 'right';
+      ctx.fillStyle = 'rgba(243,233,214,0.42)';
+      ctx.fillText(`${state.elapsed.toFixed(1)}초`, width - 18, 32);
+      ctx.restore();
+
+      if (state.combo >= 3) {
+        const h = heartCenter();
+        const topY = h.y - heartSize() * 1.05 - 16;
+        const sc = 1 + state.comboFlash * 0.35;
+        ctx.save();
+        ctx.font = `800 ${Math.round(16 * sc)}px "Nanum Myeongjo", serif`;
+        ctx.textAlign = 'center';
+        ctx.fillStyle = `rgba(255,216,94,${0.55 + state.comboFlash * 0.4})`;
+        ctx.shadowColor = '#ffc93c';
+        ctx.shadowBlur = 8;
+        ctx.fillText(`✦ 연속 ${state.combo}`, h.x, topY);
+        ctx.restore();
+      }
+    }
+
+    // 심장 만개
+    if (state.bloomLife > 0) {
+      const h = heartCenter();
+      const rise = (1 - state.bloomLife) * 26;
+      ctx.save();
+      ctx.globalAlpha = Math.min(1, state.bloomLife * 1.6);
+      ctx.font = '800 22px "Nanum Myeongjo", serif';
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#ffe08a';
+      ctx.shadowColor = '#ffc93c';
+      ctx.shadowBlur = 16;
+      ctx.fillText('심장 만개', h.x, h.y - heartSize() * 1.05 - 42 - rise);
+      ctx.restore();
+    }
+
+    // 비네트
+    ctx.save();
+    const vg = ctx.createRadialGradient(width / 2, height / 2, height * 0.3, width / 2, height / 2, height * 0.75);
+    vg.addColorStop(0, 'rgba(0,0,0,0)');
+    vg.addColorStop(1, 'rgba(0,0,0,0.45)');
+    ctx.fillStyle = vg;
+    ctx.fillRect(0, 0, width, height);
+    ctx.restore();
+  }
+
+  // ---------------- 입력 ----------------
+  function pointerPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+  }
+
+  function tryTint(x, y) {
+    if (state.mode !== 'playing') return;
+    if (state.tapCooldown > 0) return;            // 쿨다운 중엔 무시 — 연타해도 초당 처리 수 상한
+    let best = null, bestD = 9999;
+    for (const l of state.leaves) {
+      if (!l.alive) continue;
+      const d = Math.hypot(x - l.x, y - l.y);
+      const reach = l.r + HIT_PAD;
+      if (d < reach && d < bestD) { bestD = d; best = l; }
+    }
+    if (best) {
+      tintLeaf(best);
+      state.tapCooldown = TAP_COOLDOWN;
+    } else {
+      state.combo = 0;                            // 헛탭 = 콤보 끊김 (막 두드리면 손해)
+    }
+  }
+
+  canvas.addEventListener('pointerdown', (e) => {
+    const p = pointerPos(e);
+    state.pointer.x = p.x; state.pointer.y = p.y; state.pointer.inside = true;
+    tryTint(p.x, p.y);
+  });
+  canvas.addEventListener('pointermove', (e) => {
+    const p = pointerPos(e);
+    state.pointer.x = p.x; state.pointer.y = p.y; state.pointer.inside = true;
+  });
+  canvas.addEventListener('pointerleave', () => { state.pointer.inside = false; });
+  canvas.addEventListener('pointerup', (e) => { if (e.pointerType !== 'mouse') state.pointer.inside = false; });
+  canvas.addEventListener('pointercancel', () => { state.pointer.inside = false; });
+
+  startBtn.addEventListener('click', startGame);
+
+  function resize() {
+    const rect = stage.getBoundingClientRect();
+    width = rect.width; height = rect.height;
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.floor(width * dpr);
+    canvas.height = Math.floor(height * dpr);
+    canvas.style.width = width + 'px';
+    canvas.style.height = height + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  window.addEventListener('resize', resize);
+
+  function loop(now) {
+    const dt = Math.min(2.4, (now - lastTime) / 16.6667);
+    lastTime = now;
+    update(dt);
+    draw();
+    requestAnimationFrame(loop);
+  }
+
+  state.best = loadBest();
+  resize();
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

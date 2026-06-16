@@ -180,6 +180,18 @@ section{position:relative;max-width:1060px;margin:0 auto;padding:108px 22px 96px
 .phead .tg{font-size:12px;letter-spacing:.22em;color:var(--gold);margin-top:2px}
 .panel.spicy .phead .tg{color:var(--rose)}
 .pquote{font-family:'Gowun Batang',serif;color:var(--sub);font-size:15px;margin-bottom:20px;padding-left:14px;border-left:2px solid var(--line)}
+.excerpt{font-family:'Gowun Batang',serif;max-width:680px;margin:0 auto;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:clamp(26px,4vw,38px);box-shadow:var(--shadow)}
+.excerpt p{font-size:clamp(15.5px,2.15vw,18px);line-height:2.0;color:var(--ink);margin:0 0 17px}
+.excerpt p:last-child{margin-bottom:0;color:var(--sub)}
+.excerpt .said{color:var(--ink);font-weight:600}
+.excerpt .whisper{color:var(--rose);font-style:italic}
+.excerpt .punch{color:var(--gold);font-weight:700}
+#minigame{text-align:center}
+.mini-band{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:clamp(36px,5vw,54px) clamp(24px,4vw,40px);box-shadow:var(--shadow);max-width:600px;margin:0 auto}
+.mini-band .eyebrow{display:inline-block;margin-bottom:16px}
+.mini-band h2{font-family:'Noto Serif KR',serif;font-weight:800;font-size:clamp(25px,3.8vw,34px);margin-bottom:16px}
+.mini-band p{color:var(--sub);font-size:15px;line-height:1.9;margin-bottom:28px}
+.mini-band .btn{font-size:16px;padding:15px 40px}
 .parc{list-style:none;display:flex;flex-direction:column;gap:13px;font-size:14.5px}
 .parc li{padding-left:22px;position:relative}
 .parc li::before{content:"";position:absolute;left:2px;top:11px;width:7px;height:7px;border-radius:50%;background:var(--gold)}
@@ -301,7 +313,7 @@ footer .t{font-family:'Noto Serif KR',serif;font-size:15px;color:var(--ink);lett
 <nav>
   <a class="brand" href="#top"><span class="mark" id="brandLeaf"></span>잎</a>
   <div class="navlinks">
-    <a href="#rules">룰</a><a href="#tracks">두 갈래</a><a href="#gallery">인물</a><a href="#out">잎 밖</a>
+    <a href="#taste">장면</a><a href="#rules">룰</a><a href="#tracks">두 갈래</a><a href="#gallery">인물</a><a href="#out">잎 밖</a><a href="#minigame">미니게임</a>
   </div>
   <button id="modeBtn" aria-label="낮밤 전환">
     <span class="day-only">● 보름밤으로</span><span class="night-only">○ 한낮으로</span>
@@ -318,14 +330,14 @@ footer .t{font-family:'Noto Serif KR',serif;font-size:15px;color:var(--ink);lett
   <div class="heroInner">
     <span class="eyebrow">작품 소개 · 현대 판타지 욕망 드라마 · 칠곡 설화 기반</span>
     <h1 id="siteTitle" class="serif">잎을 건네면<span class="titleLeaf" aria-hidden="true"></span><span class="subttl">사랑에 빠진다</span></h1>
-    <p class="tagline">건네진 잎에는, <b>청구서</b>가 따른다</p>
+    <p class="tagline">건네면 운명이 되고, 거두면 <b>공허</b>가 된다.</p>
     <p class="oath">
       <span class="day-only">“딱 한 단만 더 — 그럼, 살 수 있어.” — 유단아</span>
       <span class="night-only">“나는 못난 적이 없었다. 다만, 한 번도 완전히 이긴 적이 없었다.” — 하채은</span>
     </p>
     <div class="heroCta">
       <button class="btn gold" id="catchBtn">잎을 잡는다</button>
-      <a class="btn ghost" href="#rules">룰 다섯 줄 읽기</a>
+      <a class="btn ghost" href="#rules">룰 세 줄 읽기</a>
     </div>
     <p class="hint">✦ 떨어지는 잎을 직접 눌러 잡을 수도 있어요</p>
   </div>
@@ -347,6 +359,23 @@ footer .t{font-family:'Noto Serif KR',serif;font-size:15px;color:var(--ink);lett
   <div class="oneline reveal">같은 밤, 같은 잎 다섯 장씩 —<br>한 여자는 갖고 싶어 빼앗았고, 한 여자는 “어쩔 수 없다”며 올랐다.</div>
 </section>
 
+<!-- ============ 1화 맛보기 ============ -->
+<section id="taste">
+  <div class="secHead reveal">
+    <span class="eyebrow">a scene</span>
+    <h2>그날, 잎은 손바닥에 떨어졌다</h2>
+    <p>설정이 아니라, 장면으로.</p>
+  </div>
+  <div class="excerpt reveal">
+    <p>폭풍이 친 보름밤. 칠곡 은행나무 아래, 수백 장이 쏟아지는 혼란 속에서 — 황금빛 잎 다섯 장이 단아의 손바닥에 달라붙었다. 털어도, 떨어지지 않았다.</p>
+    <p>다음 날. 늘 단아를 없는 사람처럼 지나치던 그가, 처음으로 눈을 맞췄다.</p>
+    <p><span class="said">“이상하다.”</span> 목소리가 떨렸다. <span class="said">“어제까진 아무렇지도 않았는데… 너를 보면, 숨이 안 쉬어져.”</span></p>
+    <p>거짓이 아니었다. 설렘도, 떨림도, 그 눈빛도 — 전부 진짜였다. <b class="punch">그래서 더 무서웠다.</b></p>
+    <p class="whisper">‘내가 한 게 아니야. 잎이 한 거야.’</p>
+    <p>그 변명을, 단아는 앞으로 몇 번이나 더 하게 될까.</p>
+  </div>
+</section>
+
 <!-- ============ 룰 다섯 장 ============ -->
 <section id="rules">
   <div class="secHead reveal">
@@ -364,7 +393,7 @@ footer .t{font-family:'Noto Serif KR',serif;font-size:15px;color:var(--ink);lett
       <div class="face back">한 사람에게 새길 수 있는 사랑은 <b>한 번에 하나.</b> 새로 새기는 순간, 먼저 새긴 사랑은 부서진다.</div>
     </div></div>
     <div class="rcard"><div class="in">
-      <div class="face front"><span class="lf"></span><span class="no">RULE 03</span><span class="kw">풀리면<br>쫓는다</span><span class="tap">tap</span></div>
+      <div class="face front"><span class="lf"></span><span class="no">RULE 03</span><span class="kw">풀리면<br>비워진다</span><span class="tap">tap</span></div>
       <div class="face back">잎을 거두면 운명이라 믿었던 감정이 한순간에 사라진다. 남는 건 “내가 왜 그랬지?”라는 <b>공허</b> — 누구는 쫓고, 누구는 덮고, 누구는 무너진다. 저마다, 제 방식대로.</div>
     </div></div>
   </div>
@@ -384,7 +413,7 @@ footer .t{font-family:'Noto Serif KR',serif;font-size:15px;color:var(--ink);lett
         <img src="" data-img="dana" alt="유단아" onerror="this.style.display='none'">
         <div><div class="nm">유단아</div><div class="tg">순한맛 · 오르는 손</div></div>
       </div>
-      <p class="pquote">“어쩔 수 없잖아. …살아남아야 하니까.”</p>
+      <p class="pquote">“살려고 한 거야. …정말, 그뿐일까.”</p>
       <ul class="parc">
         <li>평생 ‘그냥 그런 애’로 거론조차 되지 않던 한 — 그녀가 원한 건 가난의 탈출이 아니라 <b>인정</b>이었다.</li>
         <li>“어쩔 수 없이” 한 걸음씩 오르지만 — 위에 서는 맛을 알아갈수록, 그 말은 점점 핑계가 되어간다.</li>
@@ -397,7 +426,7 @@ footer .t{font-family:'Noto Serif KR',serif;font-size:15px;color:var(--ink);lett
         <img src="" data-img="chae" alt="하채은" onerror="this.style.display='none'">
         <div><div class="nm">하채은</div><div class="tg">매운맛 · 가로채는 손</div></div>
       </div>
-      <p class="pquote">“이번엔, 내가 가져야 할 자리야.”</p>
+      <p class="pquote">“갖고 싶어서 한 거야. 그게, 뭐.”</p>
       <ul class="parc">
         <li>늘 ‘예쁜 애들’로 묶이지만, ‘제일’이었던 적은 한 번도 없다.</li>
         <li>청순한 얼굴은 그녀가 가장 공들여 세공한 위장 — 속은 차갑고 철저하다.</li>
@@ -448,6 +477,16 @@ footer .t{font-family:'Noto Serif KR',serif;font-size:15px;color:var(--ink);lett
   </div>
 </section>
 
+<!-- ============ 미니게임 ============ -->
+<section id="minigame">
+  <div class="mini-band reveal">
+    <span class="eyebrow">mini game</span>
+    <h2 class="serif">물드는 심장</h2>
+    <p>떨어지는 잎을 눌러 황금빛으로 물들이세요. 메마른 잎이 심장에 닿으면 — 깎입니다.<br>끝은 없습니다. 심장이 멎지 않게, 얼마나 오래 뛰게 할 수 있나요?</p>
+    <a class="btn gold" href="leaf-heart.html">▶ 플레이</a>
+  </div>
+</section>
+
 <footer>
   <p class="t">잎을 건네면 사랑에 빠진다</p>
   <p>작품 소개 · 경북 칠곡 ‘말하는 은행나무’ 설화 기반</p>
@@ -455,7 +494,7 @@ footer .t{font-family:'Noto Serif KR',serif;font-size:15px;color:var(--ink);lett
 </footer>
 
 <div class="dock">
-  <a href="#rules">룰</a><a href="#tracks">갈래</a><a href="#gallery">인물</a><a href="#out">잎 밖</a>
+  <a href="#taste">장면</a><a href="#rules">룰</a><a href="#tracks">갈래</a><a href="#gallery">인물</a><a href="#out">잎 밖</a>
 </div>
 
 <!-- 잎 잡기 모달 -->
